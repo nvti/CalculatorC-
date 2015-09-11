@@ -1,0 +1,8 @@
+#12/9/2015
+Support for function:
+	+sin
+	+cos
+	+tan
+	+log (logarithm base e)
+	+log10 (logarithm base 10)
+	+logarithm
