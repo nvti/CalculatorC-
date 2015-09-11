@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace Calculator
 {
-	class Parse
-	{
+    class Parse
+    {
         static Operand getDouble(string s, ref int index)
         {
             string num = "";
@@ -19,40 +19,96 @@ namespace Calculator
                 c = s[index];
             }
 
-            index--;
             return new Operand(double.Parse(num));
         }
 
         static Operator getOperator(string s, ref int index)
         {
-            return Operator.CreateOperator(s[index].ToString());
+            return Operator.CreateOperator(s[index++].ToString());
         }
 
-        public static void Evaluate(string s, ref int i)
+		static Function getFunction(string s, ref int index)
+		{
+			string func = "";
+			for (; index < s.Length;)
+			{
+				if (s[index] == '(') break;
+				func += s[index++];
+			}
+			index++;
+			Function f = (Function) Operator.CreateOperator(func);
+			for(int i = 0; i < f.NumArg; i++)
+			{
+				if(s[index - 1] != '(' && s[index - 1] != ',') throw new Exception();
+
+				Element e = Evaluate(s, ref index);
+				index++;
+				f.Inputs.Add(e);
+            }
+
+			if (s[index - 1] != ')') throw new Exception();
+			//index++;
+
+			return f;
+		}
+		public static Element Evaluate(string s, ref int i)
         {
-            for(; i < s.Length; i++)
+            Stack<Element> element = new Stack<Element>();
+            Stack<Operator> op = new Stack<Operator>();
+            op.Push(new OpenBracket());
+
+            for (; i < s.Length;)
             {
                 char c = s[i];
-                if((c >= '0' && c <= '9') || c == '.' || c == 'e')
+				if (c == ' ')
+				{
+					i++;
+					continue;
+				}
+                if ((c >= '0' && c <= '9') || c == '.' || c == 'e')
                 {
-                    Operand a = getDouble(s, ref i);
-                    Console.WriteLine(a.Value);
+                    element.Push(getDouble(s, ref i));
                     continue;
                 }
 
-                if(c == '+' || c == '-' || c == '*' || c == '/')
+                if (c == '+' || c == '-' || c == '*' || c == '/')
                 {
-                    Operator a = getOperator(s, ref i);
-                    Console.WriteLine(a.Level);
+                    Operator temp = getOperator(s, ref i);
+                    if (temp != null)
+                    {
+                        while (temp.Level <= op.Peek().Level && !(temp is OpenBracket))
+                        {
+                            Operator o = op.Pop();
+                            o.MakeInput(element);
+                        }
+                        op.Push(temp);
+                    }
                     continue;
                 }
-                if(c == '(')
+                if (c == '(')
                 {
                     i++;
-                    Evaluate(s, ref i);
+                    element.Push(Evaluate(s, ref i));
+					continue;
                 }
-                if (c == ')') break;
+                if (c == ')' || c == ',')
+                {
+                    while (!(op.Peek() is OpenBracket))
+                    {
+                        Operator o = op.Pop();
+                        o.MakeInput(element);
+						element.Push(o);
+                    }
+                    op.Pop();
+                    break;
+                }
+
+				element.Push(getFunction(s, ref i));
             }
+
+			if (element.Count != 1) throw new Exception();
+
+			return element.Pop();
         }
     }
 }

@@ -13,9 +13,9 @@ namespace Calculator
 
     public abstract class Operator : Element
     {
-        public static ListOperator list = new ListOperator();
+        public static ListOperator listOp = new ListOperator();
 
-        public List<Element> Inputs { get; set; }
+		public List<Element> Inputs { get; set; }
 
         public double Value
         {
@@ -45,19 +45,18 @@ namespace Calculator
             Inputs.Clear();
             Inputs.Add(stack.Pop());
             Inputs.Add(stack.Pop());
-            stack.Push(this);
         }
 
         public static Operator CreateOperator(string key)
         {
             Operator op;
-            if (list.TryGetValue(key, out op))
+            if (listOp.TryGetValue(key, out op))
             {
                 return op.Clone();
             }
             return null;
         }
-    }
+	}
 
     public class Operand : Element
     {
@@ -67,6 +66,8 @@ namespace Calculator
         }
         public double Value { get; set; }
     }
+
+    #region  Normal operator
 
     public class Add : Operator
     {
@@ -156,18 +157,107 @@ namespace Calculator
             return Math.Pow(Inputs[1].Value, Inputs[0].Value);
         }
     }
+	#endregion
 
-    public class ListOperator : Dictionary<string, Operator>
+	#region Function support
+
+	public abstract class Function : Operator
+	{
+		public int NumArg { set; get; }
+		public abstract override double Calculate();
+	}
+
+	public class Sin : Function
+    {
+        public Sin() : base()
+        {
+			NumArg = 1;
+        }
+        public override double Calculate()
+        {
+            return Math.Sin(Inputs[0].Value);
+        }
+	}
+
+	public class Logarithm : Function
+	{
+		public Logarithm() : base()
+		{
+			NumArg = 2;
+		}
+		public override double Calculate()
+		{
+			return Math.Log(Inputs[1].Value) / Math.Log(Inputs[0].Value);
+		}
+	}
+
+	public class Log : Function
+	{
+		public Log() : base()
+		{
+			NumArg = 1;
+		}
+		public override double Calculate()
+		{
+			return Math.Log(Inputs[0].Value);
+		}
+	}
+
+	public class Log10 : Function
+	{
+		public Log10() : base()
+		{
+			NumArg = 1;
+		}
+		public override double Calculate()
+		{
+			return Math.Log10(Inputs[0].Value);
+		}
+	}
+	public class Cos : Function
+	{
+		public Cos() : base()
+		{
+			NumArg = 1;
+		}
+		public override double Calculate()
+		{
+			return Math.Cos(Inputs[0].Value);
+		}
+	}
+
+	public class Tan : Function
+	{
+		public Tan() : base()
+		{
+			NumArg = 1;
+		}
+		public override double Calculate()
+		{
+			return Math.Tan(Inputs[0].Value);
+		}
+	}
+
+	#endregion
+
+
+	public class ListOperator : Dictionary<string, Operator>
     {
         public ListOperator()
         {
-            this.Add("+", new Add());
-            this.Add("-", new Minus());
-            this.Add("*", new Mul());
-            this.Add("/", new Div());
-            this.Add("(", new OpenBracket());
-            this.Add(")", new CloseBracket());
-            this.Add("^", new Pow());
-        }
+			Add("+", new Add());
+			Add("-", new Minus());
+			Add("*", new Mul());
+            Add("/", new Div());
+            Add("(", new OpenBracket());
+            Add(")", new CloseBracket());
+            Add("^", new Pow());
+            Add("sin", new Sin());
+			Add("cos", new Cos());
+			Add("tan", new Tan());
+			Add("logarithm", new Logarithm());
+			Add("log", new Log());
+			Add("log10", new Log10());
+		}
     }
 }
