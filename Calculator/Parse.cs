@@ -46,7 +46,12 @@ namespace Calculator
                     Console.WriteLine(a.Level);
                     continue;
                 }
-                
+                if(c == '(')
+                {
+                    i++;
+                    Evaluate(s, ref i);
+                }
+                if (c == ')') break;
             }
         }
     }
