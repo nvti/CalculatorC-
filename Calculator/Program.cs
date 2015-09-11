@@ -20,8 +20,10 @@ namespace Calculator
 				if (s == "") continue;
 				try
 				{
-					Element e = Connect(s + ")");
-					Console.WriteLine("Ans: " + e.Value);
+                    //Element e = Connect(s + ")");
+                    //Console.WriteLine("Ans: " + e.Value);
+                    int i = 0;
+                    Parse.Evaluate(s, ref i);
 				}
 				catch 
 				{
