@@ -4,3 +4,9 @@ f:\documents\visual studio 2013\Projects\Calculator\Calculator\bin\Debug\Calcula
 f:\documents\visual studio 2013\Projects\Calculator\Calculator\bin\Debug\Calculator.pdb
 f:\documents\visual studio 2013\Projects\Calculator\Calculator\obj\Debug\Calculator.exe
 f:\documents\visual studio 2013\Projects\Calculator\Calculator\obj\Debug\Calculator.pdb
+F:\Project\C#\ConsoleApp\CalculatorC-\Calculator\bin\Debug\Calculator.exe.config
+F:\Project\C#\ConsoleApp\CalculatorC-\Calculator\obj\Debug\Calculator.exe
+F:\Project\C#\ConsoleApp\CalculatorC-\Calculator\obj\Debug\Calculator.pdb
+F:\Project\C#\ConsoleApp\CalculatorC-\Calculator\bin\Debug\Calculator.exe
+F:\Project\C#\ConsoleApp\CalculatorC-\Calculator\bin\Debug\Calculator.pdb
+F:\Project\C#\ConsoleApp\CalculatorC-\Calculator\obj\Debug\Calculator.csprojResolveAssemblyReference.cache

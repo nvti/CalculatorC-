@@ -52,7 +52,7 @@ namespace Calculator
 					num = "";
 				}
 
-				Operator temp = listOp.CreateOperator(c.ToString());
+				Operator temp = Operator.CreateOperator(c.ToString());
 				if (temp != null)
 				{
 					if (temp is CloseBracket)
@@ -68,9 +68,7 @@ namespace Calculator
 					while (temp.Level <= op.Peek().Level && !(temp is OpenBracket))
 					{
 						Operator o = op.Pop();
-						o.Inputs.Add(element.Pop());
-						o.Inputs.Add(element.Pop());
-						element.Push(o);
+                        o.MakeInput(element);
 					}
 					op.Push(temp);
 				}

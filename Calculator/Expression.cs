@@ -6,180 +6,168 @@ using System.Threading.Tasks;
 
 namespace Calculator
 {
-	public interface Element
-	{
-		double Value { get; }
-	}
+    public interface Element
+    {
+        double Value { get; }
+    }
 
-	public abstract class Operator : Element
-	{
-		public static ListOperator list = new ListOperator();
+    public abstract class Operator : Element
+    {
+        public static ListOperator list = new ListOperator();
 
-		public List<Element> Inputs { get; set; }
+        public List<Element> Inputs { get; set; }
 
-		public Operator()
-		{
+        public double Value
+        {
+            get
+            {
+                return Calculate();
+            }
+        }
 
-			Inputs = new List<Element>();
-		}
-		public double Value
-		{
-			get
-			{
-				return Calculate();
-			}
-		}
+        public abstract double Calculate();
+        public int Level { get; set; }
 
-		public abstract double Calculate();
-		public int Level { get; set; }
+        public Operator()
+        {
+            Inputs = new List<Element>();
+        }
 
-		public Operator Clone()
-		{
-			return (Operator)this.MemberwiseClone();
-		}
+        public Operator Clone()
+        {
+            Operator other = (Operator)this.MemberwiseClone();
+            other.Inputs = new List<Element>();
+            return other;
+        }
 
-		public virtual void MakeInput(Stack<Element> stack)
-		{
-			Inputs.Add(stack.Pop());
-			Inputs.Add(stack.Pop());
-			stack.Push(this);
-		}
-	}
+        public virtual void MakeInput(Stack<Element> stack)
+        {
+            Inputs.Clear();
+            Inputs.Add(stack.Pop());
+            Inputs.Add(stack.Pop());
+            stack.Push(this);
+        }
 
-	public class Operand : Element
-	{
-		public Operand(double v)
-		{
-			Value = v;
-		}
-		public double Value { get; set; }
-	}
+        public static Operator CreateOperator(string key)
+        {
+            Operator op;
+            if (list.TryGetValue(key, out op))
+            {
+                return op.Clone();
+            }
+            return null;
+        }
+    }
 
-	public class Add : Operator
-	{
-		public Add()
-			: base()
-		{
-			Level = 0;
-		}
-		public override double Calculate()
-		{
-			return Inputs[0].Value + Inputs[1].Value;
-		}
-	}
+    public class Operand : Element
+    {
+        public Operand(double v)
+        {
+            Value = v;
+        }
+        public double Value { get; set; }
+    }
 
-	public class Minus : Operator
-	{
-		public Minus()
-			: base()
-		{
-			Level = 1;
-		}
-		public override double Calculate()
-		{
-			return Inputs[1].Value - Inputs[0].Value;
-		}
-	}
+    public class Add : Operator
+    {
+        public Add()
+            : base()
+        {
+            Level = 0;
+        }
+        public override double Calculate()
+        {
+            return Inputs[0].Value + Inputs[1].Value;
+        }
+    }
 
-	public class Mul : Operator
-	{
-		public Mul()
-			: base()
-		{
-			Level = 2;
-		}
-		public override double Calculate()
-		{
-			return Inputs[0].Value * Inputs[1].Value;
-		}
-	}
+    public class Minus : Operator
+    {
+        public Minus()
+            : base()
+        {
+            Level = 1;
+        }
+        public override double Calculate()
+        {
+            return Inputs[1].Value - Inputs[0].Value;
+        }
+    }
 
-	public class Div : Operator
-	{
-		public Div()
-			: base()
-		{
-			Level = 2;
-		}
-		public override double Calculate()
-		{
-			return Inputs[1].Value / Inputs[0].Value;
-		}
-	}
+    public class Mul : Operator
+    {
+        public Mul()
+            : base()
+        {
+            Level = 2;
+        }
+        public override double Calculate()
+        {
+            return Inputs[0].Value * Inputs[1].Value;
+        }
+    }
 
-	public class CloseBracket : Operator
-	{
-		public CloseBracket()
-		{
-			Level = -1;
-		}
-		public override double Calculate()
-		{
-			return 0;
-		}
-	}
+    public class Div : Operator
+    {
+        public Div()
+            : base()
+        {
+            Level = 2;
+        }
+        public override double Calculate()
+        {
+            return Inputs[1].Value / Inputs[0].Value;
+        }
+    }
 
-	public class OpenBracket : Operator
-	{
-		public OpenBracket()
-		{
-			Level = -1;
-		}
-		public override double Calculate()
-		{
-			return 0;
-		}
-	}
+    public class CloseBracket : Operator
+    {
+        public CloseBracket()
+        {
+            Level = -1;
+        }
+        public override double Calculate()
+        {
+            return 0;
+        }
+    }
 
-	public class Pow : Operator
-	{
-		public Pow() : base()
-		{
-			Level = 3;
-		}
+    public class OpenBracket : Operator
+    {
+        public OpenBracket()
+        {
+            Level = -1;
+        }
+        public override double Calculate()
+        {
+            return 0;
+        }
+    }
 
-		public override double Calculate()
-		{
-			return Math.Pow(Inputs[1].Value, Inputs[0].Value);
-		}
-	}
+    public class Pow : Operator
+    {
+        public Pow() : base()
+        {
+            Level = 3;
+        }
 
-	public class ListOperator : Dictionary<string, Operator>
-	{
-		public ListOperator()
-		{
-			this.Add("+", new Add());
-			this.Add("-", new Minus());
-			this.Add("*", new Mul());
-			this.Add("/", new Div());
-			this.Add("(", new OpenBracket());
-			this.Add(")", new CloseBracket());
-			this.Add("^", new Pow());
-		}
+        public override double Calculate()
+        {
+            return Math.Pow(Inputs[1].Value, Inputs[0].Value);
+        }
+    }
 
-		public Operator CreateOperator(string key)
-		{
-			Operator op;
-			//if (this.TryGetValue(key, out op))
-			//{
-			//	return op.Clone();
-			//}
-			//return null;
-
-			switch (key)
-			{
-				case "+": op = new Add(); break;
-				case "-": op = new Minus(); break;
-				case "*": op = new Mul(); break;
-				case "/": op = new Div(); break;
-				case "(": op = new OpenBracket(); break;
-				case ")": op = new CloseBracket(); break;
-				case "^": op = new Pow(); break;
-				default:
-					return null;
-			}
-
-			return op;
-		}
-	}
+    public class ListOperator : Dictionary<string, Operator>
+    {
+        public ListOperator()
+        {
+            this.Add("+", new Add());
+            this.Add("-", new Minus());
+            this.Add("*", new Mul());
+            this.Add("/", new Div());
+            this.Add("(", new OpenBracket());
+            this.Add(")", new CloseBracket());
+            this.Add("^", new Pow());
+        }
+    }
 }
