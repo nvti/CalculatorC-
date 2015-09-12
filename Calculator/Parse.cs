@@ -71,20 +71,21 @@ namespace Calculator
                     continue;
                 }
 
-                if (c == '+' || c == '-' || c == '*' || c == '/')
-                {
-                    Operator temp = getOperator(s, ref i);
-                    if (temp != null)
-                    {
-                        while (temp.Level <= op.Peek().Level && !(temp is OpenBracket))
-                        {
-                            Operator o = op.Pop();
-                            o.MakeInput(element);
-                        }
-                        op.Push(temp);
-                    }
-                    continue;
-                }
+				if (c == '+' || c == '-' || c == '*' || c == '/' || c == '^')
+				{
+					Operator temp = getOperator(s, ref i);
+					if (temp != null)
+					{
+						while (temp.Level <= op.Peek().Level && !(temp is OpenBracket))
+						{
+							Operator o = op.Pop();
+							o.MakeInput(element);
+							element.Push(o);
+						}
+						op.Push(temp);
+					}
+					continue;
+				}
                 if (c == '(')
                 {
                     i++;
