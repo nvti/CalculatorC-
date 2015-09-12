@@ -6,18 +6,31 @@ using System.Threading.Tasks;
 
 namespace Calculator
 {
-    public interface Element
+	#region Base class
+	public abstract class Element
     {
-        double Value { get; }
-    }
+        public virtual double Value { get; set; }
+
+		public static ListSupport listOp = new ListSupport();
+
+		public static Element CreateElement(string key)
+		{
+			Element op;
+			if (listOp.TryGetValue(key, out op))
+			{
+				return op.Clone();
+			}
+			return null;
+		}
+
+		public abstract Element Clone();
+	}
 
     public abstract class Operator : Element
     {
-        public static ListOperator listOp = new ListOperator();
-
 		public List<Element> Inputs { get; set; }
 
-        public double Value
+        public override double Value
         {
             get
             {
@@ -33,7 +46,7 @@ namespace Calculator
             Inputs = new List<Element>();
         }
 
-        public Operator Clone()
+        public override Element Clone()
         {
             Operator other = (Operator)this.MemberwiseClone();
             other.Inputs = new List<Element>();
@@ -46,30 +59,33 @@ namespace Calculator
             Inputs.Add(stack.Pop());
             Inputs.Add(stack.Pop());
         }
-
-        public static Operator CreateOperator(string key)
-        {
-            Operator op;
-            if (listOp.TryGetValue(key, out op))
-            {
-                return op.Clone();
-            }
-            return null;
-        }
 	}
 
     public class Operand : Element
     {
+		public Operand()
+		{
+			Value = 0;
+		}
+
         public Operand(double v)
         {
             Value = v;
         }
-        public double Value { get; set; }
-    }
+        public override double Value { get; set; }
 
-    #region  Normal operator
+		public override Element Clone()
+		{
+			return (Operand)this.MemberwiseClone();
+		}
+	}
 
-    public class Add : Operator
+	#endregion
+
+
+	#region  Normal operator
+
+	public class Add : Operator
     {
         public Add()
             : base()
@@ -241,9 +257,20 @@ namespace Calculator
 	#endregion
 
 
-	public class ListOperator : Dictionary<string, Operator>
+	#region Const
+
+	public class Pi : Operand
+	{
+		public Pi()
+		{
+			Value = Math.PI;
+		}
+	}
+	#endregion
+
+	public class ListSupport : Dictionary<string, Element>
     {
-        public ListOperator()
+        public ListSupport()
         {
 			Add("+", new Add());
 			Add("-", new Minus());
@@ -252,12 +279,17 @@ namespace Calculator
             Add("(", new OpenBracket());
             Add(")", new CloseBracket());
             Add("^", new Pow());
+
+			//function
             Add("sin", new Sin());
 			Add("cos", new Cos());
 			Add("tan", new Tan());
 			Add("logarithm", new Logarithm());
 			Add("log", new Log());
 			Add("log10", new Log10());
+
+			//const
+			Add("pi", new Pi());
 		}
     }
 }
