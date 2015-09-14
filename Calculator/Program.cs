@@ -8,7 +8,6 @@ namespace Calculator
 {
 	class Program
 	{
-		//static ListOperator listOp = new ListOperator();
 		static void Main(string[] args)
 		{
 			do
@@ -20,8 +19,6 @@ namespace Calculator
 				if (s == "") continue;
 				try
 				{
-                    //Element e = Connect(s + ")");
-                    //Console.WriteLine("Ans: " + e.Value);
                     int i = 0;
                     Element e = Parse.Evaluate(s + ")", ref i);
                     Console.WriteLine("Ans: " + e.Value);

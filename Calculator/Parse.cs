@@ -44,7 +44,6 @@ namespace Calculator
             }
 
 			if (s[index - 1] != ')') throw new Exception();
-			//index++;
 
 			return f;
 		}
@@ -58,7 +57,6 @@ namespace Calculator
 		public static Element getSpec(string s, ref int index)
 		{
 			//get name of spec
-			Element e;
 			string name = "";
 			for (; index < s.Length;)
 			{
@@ -70,7 +68,6 @@ namespace Calculator
 				
 				if((StrOperator + StrEnd).IndexOf(s[index]) != -1)
 				{
-					index++;
 					return getConst(s, ref index, name);
 				}
 				name += s[index++];
