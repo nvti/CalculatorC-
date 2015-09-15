@@ -36,14 +36,14 @@ namespace Calculator
 			Function f = (Function)Element.CreateElement(func);
 			for (int i = 0; i < f.NumArg; i++)
 			{
-				if (s[index - 1] != '(' && s[index - 1] != ',') throw new Exception();
+				if (s[index - 1] != '(' && s[index - 1] != ',') throw new Exception("Function \"" + func + "\" is wrong!");
 
 				Element e = Evaluate(s, ref index);
 				index++;
 				f.Inputs.Add(e);
 			}
 
-			if (s[index - 1] != ')') throw new Exception();
+			if (s[index - 1] != ')') throw new Exception("Function \"" + func + "\" is wrong!");
 
 			return f;
 		}
@@ -77,6 +77,7 @@ namespace Calculator
 		}
 		public static Element Evaluate(string s, ref int i)
 		{
+			int start = i;
 			Stack<Element> element = new Stack<Element>();
 			Stack<Operator> op = new Stack<Operator>();
 			op.Push(new OpenBracket());
@@ -141,7 +142,7 @@ namespace Calculator
 				element.Push(getSpec(s, ref i));
 			}
 
-			if (element.Count != 1) throw new Exception();
+			if (element.Count != 1) throw new Exception("Error when calculate \"" + s.Substring(start, i - start) + "\"");
 
 			return element.Pop();
 		}

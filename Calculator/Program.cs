@@ -23,9 +23,9 @@ namespace Calculator
                     Element e = Parse.Evaluate(s + ")", ref i);
                     Console.WriteLine("Ans: " + e.Value);
                 }
-				catch 
+				catch (Exception e)
 				{
-					Console.WriteLine("Error!");
+					Console.WriteLine("Error!\n" + e.Message);
 				}
 			} while (true);
 		}
